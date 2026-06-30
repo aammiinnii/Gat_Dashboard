@@ -5,19 +5,20 @@ Gatik Fleet Watch - daily scraper / agent.
 Captures the public "Live Operations" board from https://www.gatik.ai/ and
 APPENDS new trip rows to data/history.json (an append-only archive).
 
-The board is rendered by JavaScript and may be laid out as a <table> OR as
-<div> rows, and a "Load more" button reveals extra rows. So we drive a real
-headless browser (Playwright), WAIT until truck rows actually appear, expand
-everything, then extract rows two ways:
-    1. structured <table> parsing (preferred), and if that yields nothing,
+The board is JavaScript-rendered, may be a <table> OR <div> rows, and is often
+lazy-loaded only when it scrolls into view. So we drive a real headless browser
+(Playwright), scroll the WHOLE page to trigger loading, WAIT for truck rows to
+appear, expand "Load more", then extract rows two ways:
+    1. structured <table> parsing (preferred),
     2. pattern parsing of the page text (truck id + 2 times + driving time + status).
 
-Dedup key = capture_date + truck_id + start_time + end_time.
+If nothing is found, the page's actual text is printed to the log so the cause
+is visible without downloading anything.
 
 Run locally:
     pip install -r requirements.txt
     python -m playwright install chromium
-    python scraper.py            # DEBUG=1 for verbose logging + HTML dump
+    python scraper.py            # DEBUG=1 for extra logging + HTML dump
 """
 
 import json
@@ -41,8 +42,6 @@ HEADER_MAP = {
     "truck": "truck_id", "start time": "start_time", "end time": "end_time",
     "driving time": "driving_time", "stops": "stops", "status": "status",
 }
-
-# Status words we recognise on the board (longest first so "On Time" beats "Time").
 STATUS_WORDS = ["On Time", "In Transit", "En Route", "Completed", "Loading",
                 "Departed", "Arrived", "Delayed", "Parked", "Ready", "Active"]
 
@@ -65,21 +64,89 @@ def parse_driving_minutes(text):
 def clean(t): return re.sub(r"\s+", " ", (t or "")).strip()
 
 
-def expand_all_rows(page):
-    for i in range(60):
-        btn = page.query_selector(
-            "xpath=//*[self::button or self::a or self::div or self::span]"
-            "[contains(translate(normalize-space(.),"
-            "'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'load more')]"
-        )
-        if not btn:
-            dbg(f"no more 'Load more' after {i} clicks"); break
+def scroll_through_page(page):
+    """Scroll top->bottom in steps so intersection-observer content loads."""
+    try:
+        height = page.evaluate("document.body.scrollHeight") or 4000
+    except Exception:
+        height = 4000
+    y = 0
+    while y < height + 2000:
+        page.mouse.wheel(0, 1200)
+        page.wait_for_timeout(450)
+        y += 1200
+        # stop early if rows already appeared
         try:
-            btn.scroll_into_view_if_needed(timeout=4000)
-            btn.click(timeout=4000)
-            page.wait_for_timeout(900)
+            if page.evaluate(f"() => /{TRUCK_RE}/.test(document.body.innerText)"):
+                dbg(f"truck rows appeared after scrolling ~{y}px")
+                break
+        except Exception:
+            pass
+    page.evaluate("window.scrollTo(0, 0)")
+    page.wait_for_timeout(500)
+
+
+def count_truck_rows(page):
+    """How many truck rows are currently rendered (de-duplicated)."""
+    try:
+        return len(set(re.findall(TRUCK_RE, page.inner_text("body"))))
+    except Exception:
+        return 0
+
+
+def load_more_locator(page):
+    """The smallest visible element whose text is 'Load more'."""
+    return page.get_by_text(re.compile(r"load\s*more", re.I)).first
+
+
+def expand_all_rows(page):
+    """Keep clicking 'Load more' until the list stops growing.
+
+    Stops only when the button is gone OR several clicks in a row add no new
+    rows — so it captures the COMPLETE list no matter how many pages there are.
+    """
+    prev = count_truck_rows(page)
+    dbg(f"rows before expand: {prev}")
+    stagnant = 0
+    for i in range(500):  # generous cap; we really stop on no-growth
+        loc = load_more_locator(page)
+        try:
+            if loc.count() == 0 or not loc.is_visible():
+                dbg("no visible 'Load more' left — list fully expanded")
+                break
+        except Exception:
+            break
+
+        try:
+            loc.scroll_into_view_if_needed(timeout=4000)
+            loc.click(timeout=4000)
         except Exception as e:
-            dbg(f"stopped expanding ({e})"); break
+            try:
+                loc.evaluate("el => el.click()")   # JS fallback click
+            except Exception:
+                dbg(f"could not click 'Load more' ({e}) — stopping")
+                break
+
+        # Wait for new rows to appear after the click (up to ~7s).
+        grew = False
+        for _ in range(24):
+            page.wait_for_timeout(300)
+            now = count_truck_rows(page)
+            if now > prev:
+                prev = now
+                grew = True
+                break
+
+        if grew:
+            stagnant = 0
+            dbg(f"after click {i + 1}: {prev} rows")
+        else:
+            stagnant += 1
+            if stagnant >= 3:
+                dbg(f"no new rows after {stagnant} clicks — assuming complete")
+                break
+
+    dbg(f"rows after expand: {prev}")
 
 
 def extract_from_tables(page):
@@ -106,8 +173,6 @@ def extract_from_tables(page):
 
 
 def find_status(tail):
-    # The "Status" column is the last one, so prefer the status word that
-    # appears latest in the text after the driving time.
     best, best_pos = "", -1
     for w in STATUS_WORDS:
         for m in re.finditer(r"\b" + re.escape(w) + r"\b", tail, re.I):
@@ -117,7 +182,6 @@ def find_status(tail):
 
 
 def extract_from_text(text):
-    """Resilient fallback: pull rows out of the rendered page text by pattern."""
     flat = clean(text)
     row_re = re.compile(
         rf"({TRUCK_RE})\s+({TIME_RE})\s+({TIME_RE})\s+({DRIVE_RE})\s*hrs", re.I)
@@ -141,26 +205,29 @@ def extract_from_text(text):
 def scrape_rows():
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page(user_agent=(
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"))
+        browser = p.chromium.launch(headless=True, args=[
+            "--no-sandbox", "--disable-blink-features=AutomationControlled"])
+        ctx = browser.new_context(
+            user_agent=("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36"),
+            viewport={"width": 1366, "height": 900},
+            locale="en-US", timezone_id="America/Chicago")
+        page = ctx.new_page()
         log(f"Loading {URL} ...")
         page.goto(URL, wait_until="domcontentloaded", timeout=60_000)
+        try:
+            page.wait_for_load_state("networkidle", timeout=30_000)
+        except Exception:
+            dbg("networkidle not reached in 30s (continuing)")
 
-        # Wait until actual truck rows show up in the rendered text.
+        scroll_through_page(page)
         try:
             page.wait_for_function(
-                f"() => /{TRUCK_RE}/.test(document.body.innerText)", timeout=45_000)
-            dbg("truck rows detected in page text")
+                f"() => /{TRUCK_RE}/.test(document.body.innerText)", timeout=30_000)
+            dbg("truck rows detected")
         except Exception:
-            dbg("no truck rows appeared within 45s")
-
-        # Nudge any lazy content and let the board settle.
-        try:
-            page.mouse.wheel(0, 2000); page.wait_for_timeout(1500)
-        except Exception:
-            pass
+            dbg("no truck rows after scrolling + wait")
 
         expand_all_rows(page)
 
@@ -169,13 +236,23 @@ def scrape_rows():
             dbg("no <table> rows - using text fallback")
             rows = extract_from_text(page.inner_text("body"))
 
-        if not rows and DEBUG:
-            DATA_DIR.mkdir(parents=True, exist_ok=True)
-            DEBUG_HTML.write_text(page.content())
-            DEBUG_TXT.write_text(page.inner_text("body"))
-            dbg(f"no rows - dumped {DEBUG_HTML} and {DEBUG_TXT}")
+        if not rows:
+            # Make the failure visible right in the log.
+            body = page.inner_text("body")
+            log("---- DIAGNOSTIC: no rows found ----")
+            log(f"page title : {page.title()!r}")
+            log(f"final url   : {page.url}")
+            log(f"body length : {len(body)} chars")
+            log(f"<table> count: {len(page.query_selector_all('table'))}")
+            log("---- first 3000 chars of page text ----")
+            log(body[:3000])
+            log("---- end diagnostic ----")
+            if DEBUG:
+                DATA_DIR.mkdir(parents=True, exist_ok=True)
+                DEBUG_HTML.write_text(page.content())
+                DEBUG_TXT.write_text(body)
 
-        browser.close()
+        ctx.close(); browser.close()
         return rows
 
 
@@ -215,7 +292,7 @@ def main():
     log(f"Captured {len(snapshot)} rows at {captured_at}")
     if not snapshot:
         log("No rows captured - archive left unchanged. "
-            "Download the 'debug-page' artifact to see what the page returned.")
+            "Copy the DIAGNOSTIC block above and send it for a fix.")
         return 1
 
     history = []
