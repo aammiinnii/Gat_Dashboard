@@ -202,6 +202,77 @@ def extract_from_text(text):
     return rows
 
 
+# Hover-only fields revealed when the mouse is over a row.
+DETAIL_LABELS = {
+    "stops_today": r"stops\s*today",
+    "next_stop": r"next\s*stop",
+    "driving_duration": r"driving\s*duration",
+    "refrigerated": r"refrigerated",
+}
+LABEL_ALT = r"(?:stops\s*today|next\s*stop|driving\s*duration|refrigerated)"
+
+
+def _norm_refrigerated(v):
+    low = v.lower()
+    if re.search(r"\b(yes|true|y)\b", low):
+        return "Yes"
+    if re.search(r"\b(no|false|n)\b", low):
+        return "No"
+    return v.strip()
+
+
+def parse_detail_blob(blob, truck_id):
+    """Pull the four hover fields out of the text revealed for one row.
+
+    Searches first in a window right after the truck id (covers inline detail
+    panels), then falls back to the whole blob (covers floating tooltips)."""
+    fields = {k: "" for k in DETAIL_LABELS}
+    pos = blob.lower().find(truck_id.lower())
+    regions = []
+    if pos >= 0:
+        regions.append(blob[pos:pos + 500])
+    regions.append(blob)  # fallback
+
+    for region in regions:
+        for key, lab in DETAIL_LABELS.items():
+            if fields[key]:
+                continue
+            m = re.search(lab + r"\s*[:\-]?\s*\n?\s*", region, re.I)
+            if not m:
+                continue
+            rest = region[m.end():]
+            nxt = re.search(LABEL_ALT, rest, re.I)
+            chunk = rest[:nxt.start()] if nxt else rest[:60]
+            val = next((ln.strip() for ln in chunk.splitlines() if ln.strip()), "")
+            fields[key] = val[:80]
+        if all(fields.values()):
+            break
+
+    if fields["refrigerated"]:
+        fields["refrigerated"] = _norm_refrigerated(fields["refrigerated"])
+    return fields
+
+
+def enrich_with_details(page, rows):
+    """Hover each row and attach the four detail fields."""
+    for idx, r in enumerate(rows):
+        tid = r.get("truck_id", "")
+        if not tid:
+            continue
+        try:
+            target = page.get_by_text(re.compile(rf"\b{re.escape(tid)}\b")).first
+            target.scroll_into_view_if_needed(timeout=3000)
+            target.hover(timeout=3000)
+            page.wait_for_timeout(400)
+            blob = page.inner_text("body")
+            r.update(parse_detail_blob(blob, tid))
+        except Exception as e:
+            dbg(f"hover details failed for {tid}: {e}")
+        if idx == 0:
+            dbg(f"first row details: { {k: r.get(k) for k in DETAIL_LABELS} }")
+    return rows
+
+
 def scrape_rows():
     from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
@@ -236,6 +307,10 @@ def scrape_rows():
             dbg("no <table> rows - using text fallback")
             rows = extract_from_text(page.inner_text("body"))
 
+        if rows:
+            dbg(f"enriching {len(rows)} rows with hover details ...")
+            enrich_with_details(page, rows)
+
         if not rows:
             # Make the failure visible right in the log.
             body = page.inner_text("body")
@@ -267,6 +342,10 @@ def normalize(rows, captured_at, capture_date):
             "driving_time": r.get("driving_time", ""),
             "driving_minutes": parse_driving_minutes(r.get("driving_time", "")),
             "stops": r.get("stops", ""), "status": r.get("status", ""),
+            "stops_today": r.get("stops_today", ""),
+            "next_stop": r.get("next_stop", ""),
+            "driving_duration": r.get("driving_duration", ""),
+            "refrigerated": r.get("refrigerated", ""),
         })
     return out
 
@@ -302,13 +381,23 @@ def main():
         except json.JSONDecodeError:
             log("WARN: history.json unreadable - starting fresh")
 
-    seen = {row_key(r) for r in history}
-    added = [r for r in snapshot if row_key(r) not in seen]
-    history.extend(added)
+    # Upsert: one record per trip per day, refreshed with the latest details on
+    # every run (so the 3-hourly runs keep status / next stop / etc. current).
+    index = {row_key(r): i for i, r in enumerate(history)}
+    added = updated = 0
+    for r in snapshot:
+        k = row_key(r)
+        if k in index:
+            history[index[k]] = r
+            updated += 1
+        else:
+            index[k] = len(history)
+            history.append(r)
+            added += 1
 
     HISTORY.write_text(json.dumps(history, indent=2))
     LATEST.write_text(json.dumps(snapshot, indent=2))
-    log(f"Added {len(added)} new rows - archive now holds {len(history)} rows")
+    log(f"Added {added} new, refreshed {updated} - archive now holds {len(history)} rows")
     return 0
 
 
