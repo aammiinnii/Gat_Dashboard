@@ -1,0 +1,58 @@
+name: Scrape Gatik fleet data
+
+on:
+  schedule:
+    # 06:10 UTC every day. Change this to run at a different time.
+    - cron: "10 6 * * *"
+  workflow_dispatch:        # this is what creates the "Run workflow" button
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Run scraper
+        env:
+          DEBUG: "1"
+        run: python scraper.py
+
+      - name: Upload debug page (only if a run found no rows)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-page
+          path: data/_debug_last_page.html
+          if-no-files-found: ignore
+
+      - name: Commit updated data
+        run: |
+          git config user.name  "fleet-watch-bot"
+          git config user.email "actions@github.com"
+          rm -f data/_debug_last_page.html
+          git add data/history.json data/latest.json
+          if git diff --cached --quiet; then
+            echo "No new data to commit."
+          else
+            git commit -m "data: capture $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
