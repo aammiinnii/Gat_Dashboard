@@ -4,10 +4,10 @@ on:
   schedule:
     # 06:10 UTC every day. Change this to run at a different time.
     - cron: "10 6 * * *"
-  workflow_dispatch:        # this is what creates the "Run workflow" button
+  workflow_dispatch:        # adds a manual "Run workflow" button in the Actions tab
 
 permissions:
-  contents: write
+  contents: write           # lets the job commit the updated data back to the repo
 
 concurrency:
   group: scrape
@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload debug page (only if a run found no rows)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: debug-page
           path: data/_debug_last_page.html
