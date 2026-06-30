@@ -239,6 +239,14 @@
         <input type="text" id="dmax" inputmode="numeric" placeholder="max" aria-label="Maximum driving minutes"/>
       </div>
     </div>
+    <div class="field">
+      <label for="refrig">Refrigerated</label>
+      <select id="refrig">
+        <option value="">All</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+    </div>
     <div class="status-toggles" id="status-toggles" role="group" aria-label="Filter by status"></div>
   </section>
 
@@ -260,7 +268,10 @@
             <th data-key="start_time">Start <span class="arrow">↕</span></th>
             <th data-key="end_time">End <span class="arrow">↕</span></th>
             <th data-key="driving_minutes">Driving <span class="arrow">↕</span></th>
-            <th data-key="stops">Stops <span class="arrow">↕</span></th>
+            <th data-key="stops_today">Stops today <span class="arrow">↕</span></th>
+            <th data-key="next_stop">Next stop <span class="arrow">↕</span></th>
+            <th data-key="driving_duration">Drive duration <span class="arrow">↕</span></th>
+            <th data-key="refrigerated">Refrig. <span class="arrow">↕</span></th>
             <th data-key="status">Status <span class="arrow">↕</span></th>
           </tr>
         </thead>
@@ -377,6 +388,7 @@ function apply(){
   const q=$('#q').value.trim().toLowerCase();
   const from=$('#from').value, to=$('#to').value;
   const dmin=parseInt($('#dmin').value,10), dmax=parseInt($('#dmax').value,10);
+  const refrig=$('#refrig').value;
   FILTERED=ALL.filter(r=>{
     if(q && !(r.truck_id||'').toLowerCase().includes(q)) return false;
     if(from && r.capture_date < from) return false;
@@ -384,6 +396,12 @@ function apply(){
     if(activeStatus.size && !activeStatus.has(r.status)) return false;
     if(!isNaN(dmin) && r.driving_minutes < dmin) return false;
     if(!isNaN(dmax) && r.driving_minutes > dmax) return false;
+    if(refrig){
+      const t=(r.refrigerated||'').toString().toLowerCase();
+      const isYes=/^y(es)?$|true/.test(t), isNo=/^n(o)?$|false/.test(t);
+      if(refrig==='yes' && !isYes) return false;
+      if(refrig==='no' && !isNo) return false;
+    }
     return true;
   });
   sortRows(); render(); renderCharts(); renderStats();
@@ -392,7 +410,7 @@ function sortRows(){
   const {key,dir}=sort;
   FILTERED.sort((a,b)=>{
     let x=a[key],y=b[key];
-    if(key==='driving_minutes'||key==='stops'){x=+x||0;y=+y||0;return (x-y)*dir;}
+    if(key==='driving_minutes'||key==='stops'||key==='stops_today'){x=+x||0;y=+y||0;return (x-y)*dir;}
     x=String(x??'');y=String(y??'');return x.localeCompare(y)*dir;
   });
 }
@@ -412,7 +430,10 @@ function render(){
       <td>${esc(r.start_time)||'—'}</td>
       <td>${esc(r.end_time)||'—'}</td>
       <td class="num">${r.driving_minutes||0}<span style="color:var(--muted-2)"> min</span></td>
-      <td class="num">${r.stops===''||r.stops==null?'—':r.stops}</td>
+      <td class="num">${r.stops_today===''||r.stops_today==null?'—':esc(r.stops_today)}</td>
+      <td>${milesToKm(esc(r.next_stop))||'—'}</td>
+      <td class="num">${esc(r.driving_duration)||'—'}</td>
+      <td>${refrigPill(r.refrigerated)}</td>
       <td><span class="pill ${statusClass(r.status)}">${esc(r.status)||'Unknown'}</span></td>`;
     frag.appendChild(tr);
   });
@@ -424,6 +445,21 @@ function render(){
   });
 }
 function esc(s){return String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
+/* Convert any "N mi/mile/miles" inside a string to kilometres (1 mi = 1.60934 km). */
+function milesToKm(s){
+  if(!s) return s;
+  return String(s).replace(/(\d+(?:\.\d+)?)\s*(?:mi|mile|miles)\b/gi,
+    (_,n)=>`${(parseFloat(n)*1.60934).toFixed(1)} km`);
+}
+function refrigPill(v){
+  const t=(v||'').toString().trim();
+  if(!t) return '—';
+  const yes=/^y(es)?$|true/i.test(t);
+  const no=/^n(o)?$|false/i.test(t);
+  if(yes) return `<span class="pill ready">Yes</span>`;
+  if(no)  return `<span class="pill parked">No</span>`;
+  return esc(t);
+}
 
 /* ---------------- Stats ---------------- */
 function renderStats(){
@@ -492,10 +528,13 @@ function drawStatus(){
 /* ---------------- CSV export ---------------- */
 function exportCSV(){
   const cols=['capture_date','captured_at','truck_id','start_time','end_time',
-    'driving_time','driving_minutes','stops','status'];
+    'driving_time','driving_minutes','stops_today','next_stop','driving_duration',
+    'refrigerated','status'];
   const head=cols.join(',');
   const body=FILTERED.map(r=>cols.map(c=>{
-    let v=r[c]??'';v=String(v).replace(/"/g,'""');
+    let v=r[c]??'';
+    if(c==='next_stop') v=milesToKm(String(v));
+    v=String(v).replace(/"/g,'""');
     return /[",\n]/.test(v)?`"${v}"`:v;}).join(',')).join('\n');
   const blob=new Blob([head+'\n'+body],{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -505,13 +544,14 @@ function exportCSV(){
 
 /* ---------------- Events ---------------- */
 ['q','from','to','dmin','dmax'].forEach(id=>$('#'+id).addEventListener('input',apply));
+$('#refrig').addEventListener('change',apply);
 document.querySelectorAll('thead th').forEach(th=>th.addEventListener('click',()=>{
   const k=th.dataset.key;
   if(sort.key===k)sort.dir*=-1;else{sort.key=k;sort.dir=1;}
   sortRows();render();
 }));
 $('#reset').onclick=()=>{
-  $('#q').value='';$('#dmin').value='';$('#dmax').value='';
+  $('#q').value='';$('#dmin').value='';$('#dmax').value='';$('#refrig').value='';
   activeStatus.clear();
   document.querySelectorAll('.pill-toggle').forEach(b=>b.setAttribute('aria-pressed','false'));
   initDates();apply();
