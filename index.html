@@ -70,7 +70,7 @@
   .banner.show{display:block}
 
   /* ---------- Stat strip ---------- */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line-soft);
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line-soft);
     border:1px solid var(--line-soft);margin:22px 0;border-radius:6px;overflow:hidden}
   .stat{background:var(--panel);padding:16px 18px}
   .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
@@ -78,12 +78,38 @@
   .stat .v small{font-size:14px;color:var(--muted);font-weight:500}
 
   /* ---------- Charts ---------- */
-  .charts{display:grid;grid-template-columns:1.4fr 1.4fr 1fr;gap:14px;margin-bottom:22px}
+  .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:22px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 16px 12px}
   .card h3{margin:0 0 2px;font-size:12px;font-family:var(--mono);letter-spacing:.14em;
     text-transform:uppercase;color:var(--muted);font-weight:500}
   .card .cap{font-size:12px;color:var(--muted-2);margin:0 0 12px}
   .chart-box{position:relative;height:170px}
+
+  /* ---------- Ask the fleet (chat agent) ---------- */
+  .ask{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    margin-bottom:22px;overflow:hidden}
+  .ask-head{display:flex;align-items:center;gap:10px;padding:14px 16px;
+    border-bottom:1px solid var(--line)}
+  .ask-head .dot{margin:0}
+  .ask-head h3{margin:0;font-size:12px;font-family:var(--mono);letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink);font-weight:600}
+  .ask-head .cap{margin-left:auto;font-size:11.5px;color:var(--muted-2);font-family:var(--mono)}
+  .ask-log{padding:14px 16px;max-height:300px;overflow-y:auto;display:flex;
+    flex-direction:column;gap:10px}
+  .msg{max-width:88%;padding:9px 13px;border-radius:10px;font-size:13.5px;line-height:1.5;
+    white-space:pre-wrap}
+  .msg.user{align-self:flex-end;background:rgba(123,195,107,.14);
+    border:1px solid rgba(123,195,107,.3)}
+  .msg.bot{align-self:flex-start;background:var(--panel-2);border:1px solid var(--line)}
+  .msg.bot b{color:var(--live)}
+  .ask-suggest{display:flex;flex-wrap:wrap;gap:7px;padding:0 16px 12px}
+  .chip{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);
+    background:transparent;color:var(--muted);padding:6px 11px;border-radius:20px;cursor:pointer}
+  .chip:hover{border-color:var(--live);color:var(--ink)}
+  .ask-input{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+  .ask-input input{flex:1;background:var(--bg);border:1px solid var(--line);color:var(--ink);
+    font-family:var(--sans);font-size:14px;padding:10px 13px;border-radius:6px}
+  .ask-input input:focus{outline:2px solid var(--live);outline-offset:1px;border-color:transparent}
 
   /* ---------- Controls ---------- */
   .controls{background:var(--panel);border:1px solid var(--line);border-radius:8px;
@@ -198,6 +224,20 @@
     <div class="stat"><div class="k">Days tracked</div><div class="v" id="s-days">—</div></div>
     <div class="stat"><div class="k">Trucks seen</div><div class="v" id="s-trucks">—</div></div>
     <div class="stat"><div class="k">Avg driving</div><div class="v" id="s-avg">—<small> min</small></div></div>
+    <div class="stat"><div class="k">Fleet distance</div><div class="v" id="s-km">—<small> km</small></div></div>
+  </section>
+
+  <section class="controls" aria-label="Distance settings" style="grid-template-columns:auto auto 1fr;align-items:center;margin-bottom:18px">
+    <div class="field" style="max-width:260px">
+      <label for="speed">Fallback speed (km/h)</label>
+      <div class="range-row">
+        <input type="range" id="speed" min="20" max="90" step="5" value="45" style="width:140px" />
+        <span style="font-family:var(--mono);color:var(--ink)"><b id="speed-val">45</b> km/h</span>
+      </div>
+    </div>
+    <div class="field" style="grid-column:1/-1">
+      <span style="font-size:12px;color:var(--muted-2)">Distance is read from the miles shown in <b>Next stop</b> and converted to km. The fallback speed above is only used to estimate distance for any trip that has no distance value.</span>
+    </div>
   </section>
 
   <section class="charts" aria-label="Trends">
@@ -215,6 +255,25 @@
       <h3>Status mix</h3>
       <p class="cap">Across the current filter</p>
       <div class="chart-box"><canvas id="chart-status"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Fleet distance per day</h3>
+      <p class="cap">Total km driven, from next-stop distance</p>
+      <div class="chart-box"><canvas id="chart-km"></canvas></div>
+    </div>
+  </section>
+
+  <section class="ask" aria-label="Ask the fleet">
+    <div class="ask-head">
+      <span class="dot" aria-hidden="true"></span>
+      <h3>Ask the fleet</h3>
+      <span class="cap">answers from your data — no filters needed</span>
+    </div>
+    <div class="ask-log" id="ask-log"></div>
+    <div class="ask-suggest" id="ask-suggest"></div>
+    <div class="ask-input">
+      <input type="text" id="ask-q" placeholder="e.g. total km today, which truck drove the most, how many refrigerated?" autocomplete="off" />
+      <button class="btn primary" id="ask-send">Ask</button>
     </div>
   </section>
 
@@ -268,6 +327,7 @@
             <th data-key="start_time">Start <span class="arrow">↕</span></th>
             <th data-key="end_time">End <span class="arrow">↕</span></th>
             <th data-key="driving_minutes">Driving <span class="arrow">↕</span></th>
+            <th data-key="est_km">Distance (km) <span class="arrow">↕</span></th>
             <th data-key="stops_today">Stops today <span class="arrow">↕</span></th>
             <th data-key="next_stop">Next stop <span class="arrow">↕</span></th>
             <th data-key="driving_duration">Drive duration <span class="arrow">↕</span></th>
@@ -313,7 +373,11 @@ const SAMPLE = (()=>{
         truck_id:`G-${String(i+1).padStart(3,'0')}A`,
         start_time:t(startMin),end_time:t(startMin+drive),
         driving_time:`${Math.floor(drive/60)}:${String(drive%60).padStart(2,'0')} hrs`,
-        driving_minutes:drive,stops:Math.floor(Math.random()*4),status:st
+        driving_minutes:drive,stops:Math.floor(Math.random()*4),status:st,
+        stops_today:1+Math.floor(Math.random()*5),
+        next_stop:`Walmart DC - ${(2+Math.random()*9).toFixed(1)} mi`,
+        driving_duration:`${Math.floor(drive/60)}:${String(drive%60).padStart(2,'0')} hrs`,
+        refrigerated:Math.random()<0.5?"Yes":"No"
       });
     }
   });
@@ -323,9 +387,19 @@ const SAMPLE = (()=>{
 /* ---------------- State ---------------- */
 let ALL=[], FILTERED=[], usingSample=false;
 let sort={key:"capture_date",dir:-1};
+let speed=45;                       /* km/h used for distance estimate */
 const activeStatus=new Set();
 const charts={};
 const $=s=>document.querySelector(s);
+
+/* Trip distance in km. Real value comes from the miles in "Next stop";
+   falls back to driving-time × speed only when a trip has no distance. */
+function estKm(r){
+  const m=String(r.next_stop||'').match(/(\d+(?:\.\d+)?)\s*(?:mi|mile|miles)\b/i);
+  if(m) return parseFloat(m[1])*1.60934;
+  return ((r.driving_minutes||0)/60)*speed;
+}
+function distIsReal(r){return /(\d+(?:\.\d+)?)\s*(?:mi|mile|miles)\b/i.test(String(r.next_stop||''));}
 
 const STATUS_CLASS={"completed":"completed","on time":"ontime","ready":"ready",
   "loading":"loading","parked":"parked","delayed":"delayed"};
@@ -347,6 +421,10 @@ async function load(){
                    if(r.stops==null) r.stops=""; });
   buildStatusToggles();
   initDates();
+  buildSuggestions();
+  if(!$('#ask-log').children.length){
+    addMsg("Ask me about the fleet — distances, counts, busiest day, or a specific truck. No filters needed.","bot");
+  }
   $('#data-note').textContent = usingSample
     ? 'sample data · awaiting first scrape'
     : `${ALL.length} records · live archive`;
@@ -411,6 +489,7 @@ function sortRows(){
   FILTERED.sort((a,b)=>{
     let x=a[key],y=b[key];
     if(key==='driving_minutes'||key==='stops'||key==='stops_today'){x=+x||0;y=+y||0;return (x-y)*dir;}
+    if(key==='est_km'){return (estKm(a)-estKm(b))*dir;}
     x=String(x??'');y=String(y??'');return x.localeCompare(y)*dir;
   });
 }
@@ -430,6 +509,7 @@ function render(){
       <td>${esc(r.start_time)||'—'}</td>
       <td>${esc(r.end_time)||'—'}</td>
       <td class="num">${r.driving_minutes||0}<span style="color:var(--muted-2)"> min</span></td>
+      <td class="num">${estKm(r)?estKm(r).toFixed(1):'—'}</td>
       <td class="num">${r.stops_today===''||r.stops_today==null?'—':esc(r.stops_today)}</td>
       <td>${milesToKm(esc(r.next_stop))||'—'}</td>
       <td class="num">${esc(r.driving_duration)||'—'}</td>
@@ -470,6 +550,8 @@ function renderStats(){
   const mins=f.map(r=>r.driving_minutes||0).filter(Boolean);
   const avg=mins.length?Math.round(mins.reduce((a,b)=>a+b,0)/mins.length):0;
   $('#s-avg').innerHTML=`${avg}<small> min</small>`;
+  const totalKm=f.reduce((a,r)=>a+estKm(r),0);
+  $('#s-km').innerHTML=`${Math.round(totalKm).toLocaleString()}<small> km</small>`;
 }
 
 /* ---------------- Charts ---------------- */
@@ -481,18 +563,20 @@ Chart.defaults.font.size=11;
 
 function byDay(){
   const m={};
-  FILTERED.forEach(r=>{const d=r.capture_date||'?';(m[d]??={c:0,sum:0,n:0});
-    m[d].c++; if(r.driving_minutes){m[d].sum+=r.driving_minutes;m[d].n++;}});
+  FILTERED.forEach(r=>{const d=r.capture_date||'?';(m[d]??={c:0,sum:0,n:0,km:0});
+    m[d].c++; m[d].km+=estKm(r); if(r.driving_minutes){m[d].sum+=r.driving_minutes;m[d].n++;}});
   const days=Object.keys(m).sort();
   return {days,counts:days.map(d=>m[d].c),
-    avgs:days.map(d=>m[d].n?Math.round(m[d].sum/m[d].n):0)};
+    avgs:days.map(d=>m[d].n?Math.round(m[d].sum/m[d].n):0),
+    kms:days.map(d=>Math.round(m[d].km))};
 }
 function renderCharts(){
-  const {days,counts,avgs}=byDay();
+  const {days,counts,avgs,kms}=byDay();
   const labels=days.map(d=>d.slice(5));
   drawBar('chart-trips','trips',labels,counts,C.live);
   drawLine('chart-avg','avg',labels,avgs,C.accent);
   drawStatus();
+  drawBar('chart-km','km',labels,kms,C.ready);
 }
 function baseOpts(){return{responsive:true,maintainAspectRatio:false,
   plugins:{legend:{display:false}},
@@ -528,12 +612,14 @@ function drawStatus(){
 /* ---------------- CSV export ---------------- */
 function exportCSV(){
   const cols=['capture_date','captured_at','truck_id','start_time','end_time',
-    'driving_time','driving_minutes','stops_today','next_stop','driving_duration',
+    'driving_time','driving_minutes','est_km','stops_today','next_stop','driving_duration',
     'refrigerated','status'];
   const head=cols.join(',');
   const body=FILTERED.map(r=>cols.map(c=>{
-    let v=r[c]??'';
-    if(c==='next_stop') v=milesToKm(String(v));
+    let v;
+    if(c==='est_km') v=estKm(r).toFixed(1);
+    else if(c==='next_stop') v=milesToKm(String(r[c]??''));
+    else v=r[c]??'';
     v=String(v).replace(/"/g,'""');
     return /[",\n]/.test(v)?`"${v}"`:v;}).join(',')).join('\n');
   const blob=new Blob([head+'\n'+body],{type:'text/csv'});
@@ -557,6 +643,135 @@ $('#reset').onclick=()=>{
   initDates();apply();
 };
 $('#export').onclick=exportCSV;
+
+/* ---------------- Distance speed slider ---------------- */
+$('#speed').addEventListener('input',e=>{
+  speed=+e.target.value;$('#speed-val').textContent=speed;apply();
+});
+
+/* ================================================================
+   Ask the fleet — a local agent that answers questions from the
+   data (no API key, runs entirely in the browser). It understands
+   counts, sums (km), distance per truck, busiest day, longest trip,
+   refrigerated/status questions, and per-truck lookups.
+================================================================= */
+const SUGGESTIONS=[
+  "Total km today","Which truck drove the most?","How many refrigerated trucks?",
+  "How many completed today?","Busiest day","Longest trip today"];
+
+function latestDay(){return [...new Set(ALL.map(r=>r.capture_date))].sort().pop();}
+function kmTotal(rows){return rows.reduce((a,r)=>a+estKm(r),0);}
+function fmtKm(n){return `${Math.round(n).toLocaleString()} km`;}
+
+function answer(qRaw){
+  const q=qRaw.toLowerCase();
+  if(!ALL.length) return "I don't have any data loaded yet.";
+
+  // scope by date words
+  const day=latestDay();
+  const scopeToday=/\b(today|now|current)\b/.test(q);
+  const scope=r=> scopeToday ? r.capture_date===day : true;
+  const rows=ALL.filter(scope);
+  const where=scopeToday?` on ${day}`:` across the whole archive`;
+
+  // a specific truck mentioned?
+  const tm=qRaw.match(/G-\d{1,4}[A-Z]/i);
+  if(tm){
+    const id=tm[0].toUpperCase();
+    const tr=ALL.filter(r=>r.truck_id.toUpperCase()===id);
+    if(!tr.length) return `I don't see any trips for ${id}.`;
+    const today=tr.filter(r=>r.capture_date===day);
+    const km=kmTotal(today.length?today:tr);
+    const last=tr[tr.length-1];
+    if(/distance|km|how far|miles/.test(q))
+      return `${id} covered about ${fmtKm(km)}${today.length?` on ${day}`:''} across ${today.length||tr.length} trip(s).`;
+    if(/status|doing|now/.test(q))
+      return `${id}'s latest status is "${last.status||'unknown'}", next stop: ${milesToKm(last.next_stop)||'n/a'}.`;
+    if(/next stop/.test(q))
+      return `${id}'s next stop: ${milesToKm(last.next_stop)||'n/a'}.`;
+    if(/refrigerated|fridge|cold/.test(q))
+      return `${id} is ${/^y/i.test(last.refrigerated)?'refrigerated':(/^n/i.test(last.refrigerated)?'not refrigerated':'— refrigeration unknown')}.`;
+    return `${id}: ${today.length||tr.length} trip(s), ~${fmtKm(km)}, latest status "${last.status||'unknown'}".`;
+  }
+
+  // total km
+  if(/(total|sum|fleet).*(km|distance)|how (far|much).*driv|km driven|distance/.test(q)){
+    const km=kmTotal(rows);
+    return `The fleet drove about ${fmtKm(km)}${where} across ${rows.length} trips.`;
+  }
+  // which truck drove most / longest
+  if(/(which|what).*(most|furthest|farthest|longest)|top truck|busiest truck/.test(q)){
+    const by={};rows.forEach(r=>by[r.truck_id]=(by[r.truck_id]||0)+estKm(r));
+    const top=Object.entries(by).sort((a,b)=>b[1]-a[1])[0];
+    if(!top) return "No trips in that range.";
+    return `${top[0]} drove the most${where}: about ${fmtKm(top[1])}.`;
+  }
+  // longest trip by time
+  if(/longest trip|longest drive|most driving time/.test(q)){
+    const top=[...rows].sort((a,b)=>(b.driving_minutes||0)-(a.driving_minutes||0))[0];
+    return top?`Longest trip${where}: ${top.truck_id} at ${top.driving_minutes} min (${fmtKm(estKm(top))}).`:"No trips found.";
+  }
+  // refrigerated count
+  if(/refrigerated|fridge|cold/.test(q)){
+    const yes=rows.filter(r=>/^y/i.test(r.refrigerated));
+    return `${yes.length} of ${rows.length} trips${where} are refrigerated.`;
+  }
+  // status counts
+  const stMatch=["completed","on time","ready","loading","parked","delayed"]
+    .find(s=>q.includes(s));
+  if(stMatch || /how many.*(trip|truck)|count|number of/.test(q)){
+    if(stMatch){
+      const n=rows.filter(r=>(r.status||'').toLowerCase()===stMatch).length;
+      return `${n} trip(s)${where} are "${stMatch}".`;
+    }
+    const trucks=new Set(rows.map(r=>r.truck_id)).size;
+    return `${where.trim()} there are ${rows.length} trips across ${trucks} trucks.`;
+  }
+  // busiest day
+  if(/busiest|most trips|peak day/.test(q)){
+    const by={};ALL.forEach(r=>by[r.capture_date]=(by[r.capture_date]||0)+1);
+    const top=Object.entries(by).sort((a,b)=>b[1]-a[1])[0];
+    return top?`Busiest day so far: ${top[0]} with ${top[1]} trips.`:"No data yet.";
+  }
+  // average driving
+  if(/average|avg|mean/.test(q)){
+    const mins=rows.map(r=>r.driving_minutes||0).filter(Boolean);
+    const avg=mins.length?Math.round(mins.reduce((a,b)=>a+b,0)/mins.length):0;
+    return `Average driving time${where}: ${avg} min over ${mins.length} trips.`;
+  }
+  // list trucks
+  if(/list|show|which trucks|all trucks/.test(q)){
+    const ids=[...new Set(rows.map(r=>r.truck_id))].sort();
+    return `${ids.length} trucks${where}: ${ids.join(', ')}`;
+  }
+  // help / fallback
+  return "I can answer things like: \"total km today\", \"which truck drove the most\", "+
+    "\"how many refrigerated\", \"status of G-005A\", \"busiest day\", or \"average driving time\". "+
+    "Try one of the suggestions below.";
+}
+
+function addMsg(text,who){
+  const d=document.createElement('div');
+  d.className='msg '+who;
+  d.innerHTML=who==='bot'?text.replace(/\b(G-\d{1,4}[A-Z])\b/g,'<b>$1</b>'):esc(text);
+  $('#ask-log').appendChild(d);
+  $('#ask-log').scrollTop=$('#ask-log').scrollHeight;
+}
+function ask(q){
+  q=(q||'').trim(); if(!q) return;
+  addMsg(q,'user');
+  $('#ask-q').value='';
+  setTimeout(()=>addMsg(answer(q),'bot'),120);
+}
+function buildSuggestions(){
+  const host=$('#ask-suggest');host.innerHTML='';
+  SUGGESTIONS.forEach(s=>{
+    const b=document.createElement('button');b.className='chip';b.textContent=s;
+    b.onclick=()=>ask(s);host.appendChild(b);
+  });
+}
+$('#ask-send').onclick=()=>ask($('#ask-q').value);
+$('#ask-q').addEventListener('keydown',e=>{if(e.key==='Enter')ask($('#ask-q').value);});
 
 /* clock */
 function tick(){const d=new Date();
