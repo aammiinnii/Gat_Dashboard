@@ -24,11 +24,11 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-          cache: pip
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install playwright
           python -m playwright install --with-deps chromium
 
       - name: Run scraper
@@ -41,14 +41,16 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: debug-page
-          path: data/_debug_last_page.html
+          path: |
+            data/_debug_last_page.html
+            data/_debug_last_text.txt
           if-no-files-found: ignore
 
       - name: Commit updated data
         run: |
           git config user.name  "fleet-watch-bot"
           git config user.email "actions@github.com"
-          rm -f data/_debug_last_page.html
+          rm -f data/_debug_last_page.html data/_debug_last_text.txt
           git add data/history.json data/latest.json
           if git diff --cached --quiet; then
             echo "No new data to commit."
