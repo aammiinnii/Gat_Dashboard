@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fleet Watch — Gatik Autonomous Operations Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#161C13;
+    --panel:#1E2619;
+    --panel-2:#243020;
+    --line:#36422F;
+    --line-soft:#2A331F;
+    --ink:#ECEADD;
+    --muted:#93A085;
+    --muted-2:#6E7A62;
+    --accent:#E5AE3A;      /* amber signal */
+    --live:#7BC36B;        /* active green */
+    --ready:#74A8C9;       /* ready blue */
+    --clay:#D27D4E;        /* alert */
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:'Space Grotesk',system-ui,-apple-system,Segoe UI,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:15px;line-height:1.45;
+    background-image:
+      radial-gradient(900px 500px at 85% -10%, rgba(123,195,107,.06), transparent 60%),
+      radial-gradient(700px 400px at -10% 110%, rgba(116,168,201,.05), transparent 60%);
+    background-attachment:fixed;
+  }
+  a{color:inherit}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 22px}
+
+  /* ---------- Dispatch board header ---------- */
+  header.board{
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(36,48,32,.55),rgba(22,28,19,0));
+    position:relative;overflow:hidden;
+  }
+  .scanline{position:absolute;left:0;right:0;bottom:-1px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--live),transparent);
+    opacity:.55;animation:scan 6s linear infinite}
+  @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+  .board-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;
+    padding:26px 0 20px;flex-wrap:wrap}
+  .brand{display:flex;flex-direction:column;gap:6px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--muted)}
+  h1{margin:0;font-size:clamp(26px,4.4vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1}
+  h1 .glyph{color:var(--live)}
+  .sub{color:var(--muted);font-size:13.5px;max-width:46ch}
+  .status-readout{font-family:var(--mono);font-size:12px;text-align:right;
+    display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+  .readout-row{display:flex;align-items:center;gap:8px;color:var(--muted)}
+  .readout-row b{color:var(--ink);font-weight:600}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(123,195,107,.6);animation:pulse 2.2s ease-out infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(123,195,107,.55)}
+    70%{box-shadow:0 0 0 7px rgba(123,195,107,0)}100%{box-shadow:0 0 0 0 rgba(123,195,107,0)}}
+
+  .banner{font-family:var(--mono);font-size:12px;color:#1a1f15;background:var(--accent);
+    padding:7px 14px;border-radius:4px;display:none;margin:0 0 0 auto;width:fit-content}
+  .banner.show{display:block}
+
+  /* ---------- Stat strip ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line-soft);
+    border:1px solid var(--line-soft);margin:22px 0;border-radius:6px;overflow:hidden}
+  .stat{background:var(--panel);padding:16px 18px}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-size:30px;font-weight:600;letter-spacing:-.02em;margin-top:6px;font-family:var(--mono)}
+  .stat .v small{font-size:14px;color:var(--muted);font-weight:500}
+
+  /* ---------- Charts ---------- */
+  .charts{display:grid;grid-template-columns:1.4fr 1.4fr 1fr;gap:14px;margin-bottom:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 16px 12px}
+  .card h3{margin:0 0 2px;font-size:12px;font-family:var(--mono);letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);font-weight:500}
+  .card .cap{font-size:12px;color:var(--muted-2);margin:0 0 12px}
+  .chart-box{position:relative;height:170px}
+
+  /* ---------- Controls ---------- */
+  .controls{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:16px;margin-bottom:18px;display:grid;
+    grid-template-columns:1.6fr 1fr 1fr auto;gap:14px;align-items:end}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field label{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted)}
+  input[type=text],input[type=date],select{
+    background:var(--bg);border:1px solid var(--line);color:var(--ink);
+    font-family:var(--mono);font-size:13px;padding:9px 11px;border-radius:5px;width:100%}
+  input::placeholder{color:var(--muted-2)}
+  input:focus,select:focus{outline:2px solid var(--live);outline-offset:1px;border-color:transparent}
+  .range-row{display:flex;gap:8px;align-items:center}
+  .range-row span{font-family:var(--mono);font-size:12px;color:var(--muted-2)}
+  .status-toggles{display:flex;flex-wrap:wrap;gap:7px;grid-column:1/-1;margin-top:2px}
+  .pill-toggle{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+    border:1px solid var(--line);background:transparent;color:var(--muted);
+    padding:6px 12px;border-radius:20px;cursor:pointer;transition:.15s}
+  .pill-toggle[aria-pressed=true]{border-color:var(--live);color:var(--ink);
+    background:rgba(123,195,107,.12)}
+  .pill-toggle:focus-visible{outline:2px solid var(--live);outline-offset:2px}
+  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.06em;cursor:pointer;
+    border:1px solid var(--line);background:var(--panel-2);color:var(--ink);
+    padding:9px 16px;border-radius:5px;transition:.15s;white-space:nowrap}
+  .btn:hover{border-color:var(--live)}
+  .btn.primary{background:var(--live);color:#16210f;border-color:var(--live);font-weight:600}
+  .btn:focus-visible{outline:2px solid var(--live);outline-offset:2px}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;
+    margin-bottom:10px;flex-wrap:wrap}
+  .count{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .count b{color:var(--ink)}
+  .toolbar .right{display:flex;gap:8px}
+
+  /* ---------- Table ---------- */
+  .table-shell{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+  .table-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px}
+  thead th{position:sticky;top:0;background:var(--panel-2);text-align:left;
+    padding:11px 14px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);cursor:pointer;
+    user-select:none;white-space:nowrap}
+  thead th .arrow{opacity:.35;margin-left:5px}
+  thead th[aria-sort] .arrow{opacity:1;color:var(--live)}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+  tbody tr:hover{background:rgba(123,195,107,.05)}
+  tbody tr:last-child td{border-bottom:none}
+  .truck{color:var(--ink);font-weight:600}
+  .num{color:var(--muted)}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;
+    padding:4px 10px;border-radius:20px;border:1px solid transparent}
+  .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  .pill.completed{color:var(--live);background:rgba(123,195,107,.10);border-color:rgba(123,195,107,.25)}
+  .pill.ontime{color:var(--live);background:rgba(123,195,107,.10);border-color:rgba(123,195,107,.25)}
+  .pill.ready{color:var(--ready);background:rgba(116,168,201,.10);border-color:rgba(116,168,201,.25)}
+  .pill.loading{color:var(--accent);background:rgba(229,174,58,.10);border-color:rgba(229,174,58,.28)}
+  .pill.loading::before,.pill.ontime::before{animation:blink 1.6s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .pill.parked{color:var(--muted);background:rgba(147,160,133,.08);border-color:rgba(147,160,133,.2)}
+  .pill.delayed{color:var(--clay);background:rgba(210,125,78,.10);border-color:rgba(210,125,78,.28)}
+  .pill.unknown{color:var(--muted);border-color:var(--line)}
+
+  .empty{padding:54px 20px;text-align:center;color:var(--muted)}
+  .empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:6px;font-family:var(--sans)}
+
+  footer{margin:34px 0 50px;color:var(--muted-2);font-size:12px;
+    font-family:var(--mono);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    border-top:1px solid var(--line-soft);padding-top:18px}
+  footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+
+  @media (max-width:980px){
+    .charts{grid-template-columns:1fr 1fr}
+    .charts .card:last-child{grid-column:1/-1}
+    .controls{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:680px){
+    .stats{grid-template-columns:1fr 1fr}
+    .charts{grid-template-columns:1fr}
+    .controls{grid-template-columns:1fr}
+    .status-readout{text-align:left;align-items:flex-start}
+    .board-top{align-items:flex-start}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="board">
+  <div class="scanline" aria-hidden="true"></div>
+  <div class="wrap board-top">
+    <div class="brand">
+      <span class="eyebrow">Autonomous Freight · Operations Archive</span>
+      <h1>Fleet<span class="glyph">·</span>Watch</h1>
+      <p class="sub">A daily archive of Gatik's public live-operations board — every captured trip, searchable and tracked over time.</p>
+    </div>
+    <div class="status-readout">
+      <div class="readout-row"><span class="dot" aria-hidden="true"></span><span>Local time <b id="clock">--:--:--</b></span></div>
+      <div class="readout-row">Last capture <b id="last-capture">—</b></div>
+      <div class="readout-row">Source <a href="https://www.gatik.ai/" target="_blank" rel="noopener" style="color:var(--ink)">gatik.ai</a></div>
+    </div>
+  </div>
+  <div class="wrap"><div class="banner" id="sample-banner">Showing sample data — no <code>data/history.json</code> found yet. Run the scraper to populate the real archive.</div></div>
+</header>
+
+<main class="wrap">
+
+  <section class="stats" aria-label="Summary">
+    <div class="stat"><div class="k">Trips archived</div><div class="v" id="s-trips">—</div></div>
+    <div class="stat"><div class="k">Days tracked</div><div class="v" id="s-days">—</div></div>
+    <div class="stat"><div class="k">Trucks seen</div><div class="v" id="s-trucks">—</div></div>
+    <div class="stat"><div class="k">Avg driving</div><div class="v" id="s-avg">—<small> min</small></div></div>
+  </section>
+
+  <section class="charts" aria-label="Trends">
+    <div class="card">
+      <h3>Trips per day</h3>
+      <p class="cap">Completed trips captured each day</p>
+      <div class="chart-box"><canvas id="chart-trips"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Avg driving time</h3>
+      <p class="cap">Mean minutes per trip, by day</p>
+      <div class="chart-box"><canvas id="chart-avg"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Status mix</h3>
+      <p class="cap">Across the current filter</p>
+      <div class="chart-box"><canvas id="chart-status"></canvas></div>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="Filters">
+    <div class="field">
+      <label for="q">Search truck</label>
+      <input type="text" id="q" placeholder="e.g. G-001" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="from">From date</label>
+      <input type="date" id="from" />
+    </div>
+    <div class="field">
+      <label for="to">To date</label>
+      <input type="date" id="to" />
+    </div>
+    <div class="field">
+      <label for="dmin">Driving (min)</label>
+      <div class="range-row">
+        <input type="text" id="dmin" inputmode="numeric" placeholder="min" aria-label="Minimum driving minutes"/>
+        <span>–</span>
+        <input type="text" id="dmax" inputmode="numeric" placeholder="max" aria-label="Maximum driving minutes"/>
+      </div>
+    </div>
+    <div class="status-toggles" id="status-toggles" role="group" aria-label="Filter by status"></div>
+  </section>
+
+  <div class="toolbar">
+    <div class="count">Showing <b id="shown">0</b> of <b id="total">0</b> trips</div>
+    <div class="right">
+      <button class="btn" id="reset">Reset filters</button>
+      <button class="btn primary" id="export">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="table-shell">
+    <div class="table-scroll">
+      <table id="grid">
+        <thead>
+          <tr>
+            <th data-key="capture_date">Date <span class="arrow">↕</span></th>
+            <th data-key="truck_id">Truck <span class="arrow">↕</span></th>
+            <th data-key="start_time">Start <span class="arrow">↕</span></th>
+            <th data-key="end_time">End <span class="arrow">↕</span></th>
+            <th data-key="driving_minutes">Driving <span class="arrow">↕</span></th>
+            <th data-key="stops">Stops <span class="arrow">↕</span></th>
+            <th data-key="status">Status <span class="arrow">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" style="display:none">
+      <b>No trips match these filters</b>
+      Loosen the date range or status selection to see more of the archive.
+    </div>
+  </div>
+
+  <footer>
+    <span>Independent archive of publicly displayed operations data · not affiliated with Gatik</span>
+    <span id="data-note">—</span>
+  </footer>
+</main>
+
+<script>
+/* ----------------------------------------------------------------
+   Sample data — shown only when data/history.json is absent/empty.
+   Mirrors the shape the scraper writes.
+----------------------------------------------------------------- */
+const SAMPLE = (()=>{
+  const days=["2026-06-28","2026-06-29","2026-06-30"];
+  const statuses=[["Completed",70],["On Time",10],["Loading",6],["Ready",8],["Parked",4],["Delayed",2]];
+  function pickStatus(){let r=Math.random()*100,a=0;for(const[s,w]of statuses){a+=w;if(r<=a)return s;}return"Completed";}
+  function t(min){const h=Math.floor(min/60)%12||12;const m=min%60;const ap=Math.floor(min/60)%24>=12?"PM":"AM";
+    return `${h}:${String(m).padStart(2,'0')} ${ap}`;}
+  const out=[];
+  days.forEach((d,di)=>{
+    const n=9+Math.floor(Math.random()*7);
+    for(let i=0;i<n;i++){
+      const startMin=11*60+20+i*7+Math.floor(Math.random()*9);
+      const drive=36+Math.floor(Math.random()*44);
+      const st=pickStatus();
+      out.push({
+        captured_at:`${d}T20:00:00Z`,capture_date:d,
+        truck_id:`G-${String(i+1).padStart(3,'0')}A`,
+        start_time:t(startMin),end_time:t(startMin+drive),
+        driving_time:`${Math.floor(drive/60)}:${String(drive%60).padStart(2,'0')} hrs`,
+        driving_minutes:drive,stops:Math.floor(Math.random()*4),status:st
+      });
+    }
+  });
+  return out;
+})();
+
+/* ---------------- State ---------------- */
+let ALL=[], FILTERED=[], usingSample=false;
+let sort={key:"capture_date",dir:-1};
+const activeStatus=new Set();
+const charts={};
+const $=s=>document.querySelector(s);
+
+const STATUS_CLASS={"completed":"completed","on time":"ontime","ready":"ready",
+  "loading":"loading","parked":"parked","delayed":"delayed"};
+function statusClass(s){return STATUS_CLASS[(s||"").toLowerCase().trim()]||"unknown";}
+
+/* ---------------- Load ---------------- */
+async function load(){
+  try{
+    const res=await fetch('./data/history.json',{cache:'no-store'});
+    if(!res.ok) throw 0;
+    const j=await res.json();
+    if(!Array.isArray(j)||!j.length) throw 0;
+    ALL=j; usingSample=false;
+  }catch(e){
+    ALL=SAMPLE; usingSample=true;
+    $('#sample-banner').classList.add('show');
+  }
+  ALL.forEach(r=>{ if(r.driving_minutes==null) r.driving_minutes=parseDrive(r.driving_time);
+                   if(r.stops==null) r.stops=""; });
+  buildStatusToggles();
+  initDates();
+  $('#data-note').textContent = usingSample
+    ? 'sample data · awaiting first scrape'
+    : `${ALL.length} records · live archive`;
+  $('#last-capture').textContent = latestCapture();
+  apply();
+}
+function parseDrive(s){if(!s)return 0;const m=String(s).match(/(\d+):(\d+)/);
+  return m?(+m[1])*60+(+m[2]):0;}
+function latestCapture(){
+  const ts=ALL.map(r=>r.captured_at).filter(Boolean).sort();
+  if(!ts.length) return '—';
+  const d=new Date(ts[ts.length-1]);
+  return isNaN(d)?ts[ts.length-1]:d.toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+/* ---------------- Filters UI ---------------- */
+function buildStatusToggles(){
+  const set=[...new Set(ALL.map(r=>r.status).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b));
+  const host=$('#status-toggles'); host.innerHTML='';
+  set.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='pill-toggle';b.textContent=s;b.setAttribute('aria-pressed','false');
+    b.onclick=()=>{const on=b.getAttribute('aria-pressed')==='true';
+      b.setAttribute('aria-pressed',String(!on));
+      if(on)activeStatus.delete(s);else activeStatus.add(s);apply();};
+    host.appendChild(b);
+  });
+}
+function initDates(){
+  const ds=[...new Set(ALL.map(r=>r.capture_date).filter(Boolean))].sort();
+  if(ds.length){$('#from').value=ds[0];$('#to').value=ds[ds.length-1];
+    $('#from').min=ds[0];$('#from').max=ds[ds.length-1];
+    $('#to').min=ds[0];$('#to').max=ds[ds.length-1];}
+}
+
+/* ---------------- Apply filters ---------------- */
+function apply(){
+  const q=$('#q').value.trim().toLowerCase();
+  const from=$('#from').value, to=$('#to').value;
+  const dmin=parseInt($('#dmin').value,10), dmax=parseInt($('#dmax').value,10);
+  FILTERED=ALL.filter(r=>{
+    if(q && !(r.truck_id||'').toLowerCase().includes(q)) return false;
+    if(from && r.capture_date < from) return false;
+    if(to && r.capture_date > to) return false;
+    if(activeStatus.size && !activeStatus.has(r.status)) return false;
+    if(!isNaN(dmin) && r.driving_minutes < dmin) return false;
+    if(!isNaN(dmax) && r.driving_minutes > dmax) return false;
+    return true;
+  });
+  sortRows(); render(); renderCharts(); renderStats();
+}
+function sortRows(){
+  const {key,dir}=sort;
+  FILTERED.sort((a,b)=>{
+    let x=a[key],y=b[key];
+    if(key==='driving_minutes'||key==='stops'){x=+x||0;y=+y||0;return (x-y)*dir;}
+    x=String(x??'');y=String(y??'');return x.localeCompare(y)*dir;
+  });
+}
+
+/* ---------------- Render table ---------------- */
+function render(){
+  const tb=$('#rows'); tb.innerHTML='';
+  $('#shown').textContent=FILTERED.length;
+  $('#total').textContent=ALL.length;
+  $('#empty').style.display=FILTERED.length?'none':'block';
+  const frag=document.createDocumentFragment();
+  FILTERED.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="num">${r.capture_date||'—'}</td>
+      <td class="truck">${esc(r.truck_id)}</td>
+      <td>${esc(r.start_time)||'—'}</td>
+      <td>${esc(r.end_time)||'—'}</td>
+      <td class="num">${r.driving_minutes||0}<span style="color:var(--muted-2)"> min</span></td>
+      <td class="num">${r.stops===''||r.stops==null?'—':r.stops}</td>
+      <td><span class="pill ${statusClass(r.status)}">${esc(r.status)||'Unknown'}</span></td>`;
+    frag.appendChild(tr);
+  });
+  tb.appendChild(frag);
+  document.querySelectorAll('thead th').forEach(th=>{
+    th.removeAttribute('aria-sort');
+    if(th.dataset.key===sort.key)
+      th.setAttribute('aria-sort',sort.dir===1?'ascending':'descending');
+  });
+}
+function esc(s){return String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));}
+
+/* ---------------- Stats ---------------- */
+function renderStats(){
+  const f=FILTERED;
+  $('#s-trips').textContent=f.length.toLocaleString();
+  $('#s-days').textContent=new Set(f.map(r=>r.capture_date)).size;
+  $('#s-trucks').textContent=new Set(f.map(r=>r.truck_id)).size;
+  const mins=f.map(r=>r.driving_minutes||0).filter(Boolean);
+  const avg=mins.length?Math.round(mins.reduce((a,b)=>a+b,0)/mins.length):0;
+  $('#s-avg').innerHTML=`${avg}<small> min</small>`;
+}
+
+/* ---------------- Charts ---------------- */
+const C={ink:'#ECEADD',muted:'#93A085',grid:'rgba(54,66,47,.6)',live:'#7BC36B',
+  accent:'#E5AE3A',ready:'#74A8C9',clay:'#D27D4E',muted2:'#6E7A62'};
+Chart.defaults.color=C.muted;
+Chart.defaults.font.family="'IBM Plex Mono', monospace";
+Chart.defaults.font.size=11;
+
+function byDay(){
+  const m={};
+  FILTERED.forEach(r=>{const d=r.capture_date||'?';(m[d]??={c:0,sum:0,n:0});
+    m[d].c++; if(r.driving_minutes){m[d].sum+=r.driving_minutes;m[d].n++;}});
+  const days=Object.keys(m).sort();
+  return {days,counts:days.map(d=>m[d].c),
+    avgs:days.map(d=>m[d].n?Math.round(m[d].sum/m[d].n):0)};
+}
+function renderCharts(){
+  const {days,counts,avgs}=byDay();
+  const labels=days.map(d=>d.slice(5));
+  drawBar('chart-trips','trips',labels,counts,C.live);
+  drawLine('chart-avg','avg',labels,avgs,C.accent);
+  drawStatus();
+}
+function baseOpts(){return{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false}},
+  scales:{x:{grid:{display:false},ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:8}},
+          y:{grid:{color:C.grid},beginAtZero:true,ticks:{precision:0}}}};}
+function drawBar(id,key,labels,data,color){
+  charts[key]?.destroy();
+  charts[key]=new Chart($('#'+id),{type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:color+'cc',borderRadius:3,maxBarThickness:34}]},
+    options:baseOpts()});
+}
+function drawLine(id,key,labels,data,color){
+  charts[key]?.destroy();
+  charts[key]=new Chart($('#'+id),{type:'line',
+    data:{labels,datasets:[{data,borderColor:color,backgroundColor:color+'22',
+      fill:true,tension:.3,pointRadius:3,pointBackgroundColor:color,borderWidth:2}]},
+    options:baseOpts()});
+}
+function drawStatus(){
+  const m={};FILTERED.forEach(r=>{const s=r.status||'Unknown';m[s]=(m[s]||0)+1;});
+  const labels=Object.keys(m);
+  const palette={'Completed':C.live,'On Time':C.live,'Ready':C.ready,
+    'Loading':C.accent,'Parked':C.muted2,'Delayed':C.clay};
+  const colors=labels.map(l=>palette[l]||C.muted);
+  charts.status?.destroy();
+  charts.status=new Chart($('#chart-status'),{type:'doughnut',
+    data:{labels,datasets:[{data:labels.map(l=>m[l]),backgroundColor:colors,
+      borderColor:'#1E2619',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,padding:9,font:{size:10}}}}}});
+}
+
+/* ---------------- CSV export ---------------- */
+function exportCSV(){
+  const cols=['capture_date','captured_at','truck_id','start_time','end_time',
+    'driving_time','driving_minutes','stops','status'];
+  const head=cols.join(',');
+  const body=FILTERED.map(r=>cols.map(c=>{
+    let v=r[c]??'';v=String(v).replace(/"/g,'""');
+    return /[",\n]/.test(v)?`"${v}"`:v;}).join(',')).join('\n');
+  const blob=new Blob([head+'\n'+body],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`gatik-fleet-${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------------- Events ---------------- */
+['q','from','to','dmin','dmax'].forEach(id=>$('#'+id).addEventListener('input',apply));
+document.querySelectorAll('thead th').forEach(th=>th.addEventListener('click',()=>{
+  const k=th.dataset.key;
+  if(sort.key===k)sort.dir*=-1;else{sort.key=k;sort.dir=1;}
+  sortRows();render();
+}));
+$('#reset').onclick=()=>{
+  $('#q').value='';$('#dmin').value='';$('#dmax').value='';
+  activeStatus.clear();
+  document.querySelectorAll('.pill-toggle').forEach(b=>b.setAttribute('aria-pressed','false'));
+  initDates();apply();
+};
+$('#export').onclick=exportCSV;
+
+/* clock */
+function tick(){const d=new Date();
+  $('#clock').textContent=d.toLocaleTimeString([],{hour12:false});}
+setInterval(tick,1000);tick();
+
+load();
+</script>
+</body>
+</html>
