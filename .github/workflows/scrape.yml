@@ -2,8 +2,8 @@ name: Scrape Gatik fleet data
 
 on:
   schedule:
-    # 06:10 UTC every day. Change this to run at a different time.
-    - cron: "10 6 * * *"
+    # Every 3 hours, on the hour (00:00, 03:00, 06:00 ... UTC).
+    - cron: "0 */3 * * *"
   workflow_dispatch:        # adds a manual "Run workflow" button in the Actions tab
 
 permissions:
