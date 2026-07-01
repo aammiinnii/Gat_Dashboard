@@ -221,17 +221,18 @@ def _norm_refrigerated(v):
     return v.strip()
 
 
-def parse_detail_blob(blob, truck_id):
-    """Pull the four hover fields out of the text revealed for one row.
+def _lines(txt):
+    return [l.strip() for l in (txt or "").splitlines() if l.strip()]
 
-    Searches first in a window right after the truck id (covers inline detail
-    panels), then falls back to the whole blob (covers floating tooltips)."""
+
+def parse_detail_blob(blob, truck_id):
+    """Pull the four hover fields out of the text revealed for one row."""
     fields = {k: "" for k in DETAIL_LABELS}
     pos = blob.lower().find(truck_id.lower())
     regions = []
     if pos >= 0:
         regions.append(blob[pos:pos + 500])
-    regions.append(blob)  # fallback
+    regions.append(blob)
 
     for region in regions:
         for key, lab in DETAIL_LABELS.items():
@@ -253,23 +254,57 @@ def parse_detail_blob(blob, truck_id):
     return fields
 
 
+MILES_RE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:mi|mile|miles)\b", re.I)
+
+
 def enrich_with_details(page, rows):
-    """Hover each row and attach the four detail fields."""
+    """Hover each row; the NEW text that appears is that row's tooltip.
+
+    We parse the four labelled fields from it AND, as a safety net, grab any
+    miles value directly so the distance is captured even if labels differ.
+    """
+    try:
+        page.mouse.move(3, 3)
+        page.wait_for_timeout(200)
+    except Exception:
+        pass
+    baseline = set(_lines(page.inner_text("body")))
+
     for idx, r in enumerate(rows):
         tid = r.get("truck_id", "")
         if not tid:
             continue
         try:
+            # Reset any open tooltip, then hover this row.
+            page.mouse.move(3, 3)
+            page.wait_for_timeout(120)
             target = page.get_by_text(re.compile(rf"\b{re.escape(tid)}\b")).first
             target.scroll_into_view_if_needed(timeout=3000)
             target.hover(timeout=3000)
-            page.wait_for_timeout(400)
-            blob = page.inner_text("body")
-            r.update(parse_detail_blob(blob, tid))
+            page.wait_for_timeout(450)
+
+            full = page.inner_text("body")
+            new_lines = [l for l in _lines(full) if l not in baseline]
+            blob = "\n".join(new_lines)
+
+            details = parse_detail_blob(blob if new_lines else full, tid)
+
+            # Safety net: if next_stop has no miles, search the revealed text.
+            if not MILES_RE.search(details.get("next_stop", "")):
+                mm = MILES_RE.search(blob) or MILES_RE.search(full)
+                if mm:
+                    if details.get("next_stop"):
+                        details["next_stop"] += f" - {mm.group(0)}"
+                    else:
+                        details["next_stop"] = mm.group(0)
+            r.update(details)
+
+            if DEBUG and idx < 2:
+                log(f"---- hover reveal for {tid} (new lines) ----")
+                log("\n".join(new_lines[:25]) or "(no new text appeared on hover)")
+                log(f"---- parsed: {details} ----")
         except Exception as e:
             dbg(f"hover details failed for {tid}: {e}")
-        if idx == 0:
-            dbg(f"first row details: { {k: r.get(k) for k in DETAIL_LABELS} }")
     return rows
 
 
