@@ -227,17 +227,8 @@
     <div class="stat"><div class="k">Fleet distance</div><div class="v" id="s-km">—<small> km</small></div></div>
   </section>
 
-  <section class="controls" aria-label="Distance settings" style="grid-template-columns:auto auto 1fr;align-items:center;margin-bottom:18px">
-    <div class="field" style="max-width:260px">
-      <label for="speed">Fallback speed (km/h)</label>
-      <div class="range-row">
-        <input type="range" id="speed" min="20" max="90" step="5" value="45" style="width:140px" />
-        <span style="font-family:var(--mono);color:var(--ink)"><b id="speed-val">45</b> km/h</span>
-      </div>
-    </div>
-    <div class="field" style="grid-column:1/-1">
-      <span style="font-size:12px;color:var(--muted-2)">Distance is read from the miles shown in <b>Next stop</b> and converted to km. The fallback speed above is only used to estimate distance for any trip that has no distance value.</span>
-    </div>
+  <section class="controls" aria-label="Distance note" style="display:block;margin-bottom:18px">
+    <span style="font-size:12px;color:var(--muted-2)">Distance is read from the miles shown in <b>Next stop</b> and converted to km. Trips with no distance value count as 0 km.</span>
   </section>
 
   <section class="charts" aria-label="Trends">
@@ -387,19 +378,16 @@ const SAMPLE = (()=>{
 /* ---------------- State ---------------- */
 let ALL=[], FILTERED=[], usingSample=false;
 let sort={key:"capture_date",dir:-1};
-let speed=45;                       /* km/h used for distance estimate */
 const activeStatus=new Set();
 const charts={};
 const $=s=>document.querySelector(s);
 
-/* Trip distance in km. Real value comes from the miles in "Next stop";
-   falls back to driving-time × speed only when a trip has no distance. */
+/* Trip distance in km — read only from the miles in "Next stop".
+   No distance value => 0 km (nothing is assumed from time/speed). */
 function estKm(r){
   const m=String(r.next_stop||'').match(/(\d+(?:\.\d+)?)\s*(?:mi|mile|miles)\b/i);
-  if(m) return parseFloat(m[1])*1.60934;
-  return ((r.driving_minutes||0)/60)*speed;
+  return m?parseFloat(m[1])*1.60934:0;
 }
-function distIsReal(r){return /(\d+(?:\.\d+)?)\s*(?:mi|mile|miles)\b/i.test(String(r.next_stop||''));}
 
 const STATUS_CLASS={"completed":"completed","on time":"ontime","ready":"ready",
   "loading":"loading","parked":"parked","delayed":"delayed"};
@@ -643,11 +631,6 @@ $('#reset').onclick=()=>{
   initDates();apply();
 };
 $('#export').onclick=exportCSV;
-
-/* ---------------- Distance speed slider ---------------- */
-$('#speed').addEventListener('input',e=>{
-  speed=+e.target.value;$('#speed-val').textContent=speed;apply();
-});
 
 /* ================================================================
    Ask the fleet — a local agent that answers questions from the
