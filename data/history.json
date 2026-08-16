@@ -599983,7 +599983,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-001A",
     "start_time": "12:30 AM",
@@ -599998,7 +599998,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-002A",
     "start_time": "1:15 AM",
@@ -600013,7 +600013,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-003A",
     "start_time": "1:15 AM",
@@ -600028,7 +600028,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-004A",
     "start_time": "1:19 AM",
@@ -600036,14 +600036,14 @@
     "driving_time": "3:51 hrs",
     "driving_minutes": 231,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "2/3",
+    "status": "Completed",
+    "stops_today": "3/3",
     "next_stop": "34.3 miles",
     "driving_duration": "3.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-005A",
     "start_time": "1:20 AM",
@@ -600058,7 +600058,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-006A",
     "start_time": "1:27 AM",
@@ -600073,7 +600073,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-007A",
     "start_time": "1:36 AM",
@@ -600081,14 +600081,14 @@
     "driving_time": "3:52 hrs",
     "driving_minutes": 232,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "4/5",
+    "status": "Completed",
+    "stops_today": "5/5",
     "next_stop": "33.5 miles",
     "driving_duration": "3.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-008A",
     "start_time": "1:48 AM",
@@ -600103,7 +600103,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-009A",
     "start_time": "1:50 AM",
@@ -600118,7 +600118,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-010A",
     "start_time": "2:11 AM",
@@ -600126,14 +600126,14 @@
     "driving_time": "1:43 hrs",
     "driving_minutes": 103,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "2/3",
+    "status": "Completed",
+    "stops_today": "3/3",
     "next_stop": "26.2 miles",
     "driving_duration": "1.7 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-011A",
     "start_time": "2:18 AM",
@@ -600148,7 +600148,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-012A",
     "start_time": "2:21 AM",
@@ -600163,7 +600163,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-013A",
     "start_time": "2:29 AM",
@@ -600172,13 +600172,13 @@
     "driving_minutes": 415,
     "stops": "",
     "status": "On Time",
-    "stops_today": "3/9",
+    "stops_today": "5/9",
     "next_stop": "19.3 miles",
     "driving_duration": "6.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-014A",
     "start_time": "2:30 AM",
@@ -600193,7 +600193,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-015A",
     "start_time": "2:31 AM",
@@ -600208,7 +600208,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-016A",
     "start_time": "2:45 AM",
@@ -600223,7 +600223,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-017A",
     "start_time": "2:45 AM",
@@ -600231,14 +600231,14 @@
     "driving_time": "1:32 hrs",
     "driving_minutes": 92,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "2/4",
-    "next_stop": "2.2 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "3.4 miles",
     "driving_duration": "1.5 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-018A",
     "start_time": "2:50 AM",
@@ -600253,7 +600253,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-019A",
     "start_time": "2:55 AM",
@@ -600268,7 +600268,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-020A",
     "start_time": "3:00 AM",
@@ -600283,7 +600283,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-021A",
     "start_time": "3:05 AM",
@@ -600298,7 +600298,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-022A",
     "start_time": "3:10 AM",
@@ -600306,14 +600306,14 @@
     "driving_time": "2:32 hrs",
     "driving_minutes": 152,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "2/4",
-    "next_stop": "14.1 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "19.3 miles",
     "driving_duration": "2.5 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-023A",
     "start_time": "3:15 AM",
@@ -600328,7 +600328,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-024A",
     "start_time": "3:15 AM",
@@ -600336,14 +600336,14 @@
     "driving_time": "2:15 hrs",
     "driving_minutes": 135,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "3/4",
+    "status": "Completed",
+    "stops_today": "4/4",
     "next_stop": "12.3 miles",
     "driving_duration": "2.3 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-025A",
     "start_time": "3:20 AM",
@@ -600358,7 +600358,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-026A",
     "start_time": "3:25 AM",
@@ -600373,7 +600373,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-027A",
     "start_time": "3:25 AM",
@@ -600388,7 +600388,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-028A",
     "start_time": "3:30 AM",
@@ -600403,7 +600403,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-029A",
     "start_time": "3:30 AM",
@@ -600418,7 +600418,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-030A",
     "start_time": "3:45 AM",
@@ -600426,14 +600426,14 @@
     "driving_time": "1:59 hrs",
     "driving_minutes": 119,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "2/3",
+    "status": "Completed",
+    "stops_today": "3/3",
     "next_stop": "23.0 miles",
     "driving_duration": "2.0 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-001B",
     "start_time": "3:51 AM",
@@ -600448,7 +600448,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-002B",
     "start_time": "4:35 AM",
@@ -600456,14 +600456,14 @@
     "driving_time": "1:32 hrs",
     "driving_minutes": 92,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "3/4",
+    "status": "Completed",
+    "stops_today": "4/4",
     "next_stop": "17.8 miles",
     "driving_duration": "1.5 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-003B",
     "start_time": "4:46 AM",
@@ -600471,14 +600471,14 @@
     "driving_time": "1:57 hrs",
     "driving_minutes": 117,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "1/4",
-    "next_stop": "37.7 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "35.4 miles",
     "driving_duration": "2.0 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-004B",
     "start_time": "4:50 AM",
@@ -600493,7 +600493,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-005B",
     "start_time": "5:05 AM",
@@ -600501,14 +600501,14 @@
     "driving_time": "2:00 hrs",
     "driving_minutes": 120,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "1/3",
+    "status": "Completed",
+    "stops_today": "3/3",
     "next_stop": "41.3 miles",
     "driving_duration": "2.0 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-006B",
     "start_time": "5:25 AM",
@@ -600516,14 +600516,14 @@
     "driving_time": "0:46 hrs",
     "driving_minutes": 46,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "1/4",
-    "next_stop": "4.4 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "4.6 miles",
     "driving_duration": "0.8 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-007B",
     "start_time": "5:30 AM",
@@ -600531,14 +600531,14 @@
     "driving_time": "1:18 hrs",
     "driving_minutes": 78,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "1/4",
-    "next_stop": "16.7 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "14.3 miles",
     "driving_duration": "1.3 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-008B",
     "start_time": "5:35 AM",
@@ -600546,14 +600546,14 @@
     "driving_time": "0:54 hrs",
     "driving_minutes": 54,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "2/4",
-    "next_stop": "8.6 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "4.0 miles",
     "driving_duration": "0.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-009B",
     "start_time": "5:40 AM",
@@ -600561,14 +600561,14 @@
     "driving_time": "0:53 hrs",
     "driving_minutes": 53,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "2/4",
-    "next_stop": "8.2 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "8.1 miles",
     "driving_duration": "0.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-010B",
     "start_time": "5:45 AM",
@@ -600576,14 +600576,14 @@
     "driving_time": "1:04 hrs",
     "driving_minutes": 64,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "1/4",
-    "next_stop": "6.9 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "7.9 miles",
     "driving_duration": "1.1 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-011B",
     "start_time": "6:00 AM",
@@ -600591,14 +600591,14 @@
     "driving_time": "0:38 hrs",
     "driving_minutes": 38,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "3/3",
+    "next_stop": "6.2 miles",
     "driving_duration": "0.6 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-012B",
     "start_time": "6:42 AM",
@@ -600606,14 +600606,14 @@
     "driving_time": "0:22 hrs",
     "driving_minutes": 22,
     "stops": "",
-    "status": "On Time",
-    "stops_today": "1/3",
+    "status": "Completed",
+    "stops_today": "3/3",
     "next_stop": "2.8 miles",
     "driving_duration": "0.4 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-013B",
     "start_time": "7:07 AM",
@@ -600621,14 +600621,14 @@
     "driving_time": "0:48 hrs",
     "driving_minutes": 48,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "3/3",
+    "next_stop": "7.5 miles",
     "driving_duration": "0.8 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-014B",
     "start_time": "7:15 AM",
@@ -600636,14 +600636,14 @@
     "driving_time": "0:36 hrs",
     "driving_minutes": 36,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "3/3",
+    "next_stop": "4.4 miles",
     "driving_duration": "0.6 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-015B",
     "start_time": "7:28 AM",
@@ -600651,14 +600651,14 @@
     "driving_time": "0:32 hrs",
     "driving_minutes": 32,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "3/3",
+    "next_stop": "5.2 miles",
     "driving_duration": "0.5 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-016B",
     "start_time": "7:30 AM",
@@ -600666,14 +600666,14 @@
     "driving_time": "0:40 hrs",
     "driving_minutes": 40,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "3/3",
+    "next_stop": "6.2 miles",
     "driving_duration": "0.7 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-017B",
     "start_time": "7:41 AM",
@@ -600681,14 +600681,14 @@
     "driving_time": "2:10 hrs",
     "driving_minutes": 130,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/5",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "On Time",
+    "stops_today": "4/5",
+    "next_stop": "36.6 miles",
     "driving_duration": "2.2 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-018B",
     "start_time": "7:43 AM",
@@ -600696,14 +600696,14 @@
     "driving_time": "0:52 hrs",
     "driving_minutes": 52,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/4",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "8.1 miles",
     "driving_duration": "0.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-019B",
     "start_time": "7:48 AM",
@@ -600711,14 +600711,14 @@
     "driving_time": "1:00 hrs",
     "driving_minutes": 60,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "3/3",
+    "next_stop": "16.7 miles",
     "driving_duration": "1.0 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-020B",
     "start_time": "7:50 AM",
@@ -600726,14 +600726,14 @@
     "driving_time": "2:12 hrs",
     "driving_minutes": 132,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/4",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "On Time",
+    "stops_today": "2/4",
+    "next_stop": "2.4 miles",
     "driving_duration": "2.2 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-021B",
     "start_time": "7:55 AM",
@@ -600741,14 +600741,14 @@
     "driving_time": "0:54 hrs",
     "driving_minutes": 54,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/4",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "7.9 miles",
     "driving_duration": "0.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-022B",
     "start_time": "8:00 AM",
@@ -600756,14 +600756,14 @@
     "driving_time": "0:51 hrs",
     "driving_minutes": 51,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/4",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "5.1 miles",
     "driving_duration": "0.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-023B",
     "start_time": "8:34 AM",
@@ -600771,14 +600771,14 @@
     "driving_time": "0:48 hrs",
     "driving_minutes": 48,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "3/3",
+    "next_stop": "7.5 miles",
     "driving_duration": "0.8 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-024B",
     "start_time": "8:39 AM",
@@ -600786,14 +600786,14 @@
     "driving_time": "0:48 hrs",
     "driving_minutes": 48,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/4",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "On Time",
+    "stops_today": "2/4",
+    "next_stop": "4.1 miles",
     "driving_duration": "0.8 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-025B",
     "start_time": "8:42 AM",
@@ -600801,14 +600801,14 @@
     "driving_time": "0:58 hrs",
     "driving_minutes": 58,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/4",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "Completed",
+    "stops_today": "4/4",
+    "next_stop": "8.6 miles",
     "driving_duration": "1.0 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-026B",
     "start_time": "8:57 AM",
@@ -600816,14 +600816,14 @@
     "driving_time": "0:40 hrs",
     "driving_minutes": 40,
     "stops": "",
-    "status": "Ready",
-    "stops_today": "0/3",
-    "next_stop": "\u2014 - 4 miles",
+    "status": "On Time",
+    "stops_today": "2/3",
+    "next_stop": "6.2 miles",
     "driving_duration": "0.7 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-027B",
     "start_time": "9:40 AM",
@@ -600831,14 +600831,14 @@
     "driving_time": "0:52 hrs",
     "driving_minutes": 52,
     "stops": "",
-    "status": "Ready",
+    "status": "On Time",
     "stops_today": "0/4",
     "next_stop": "\u2014 - 4 miles",
     "driving_duration": "0.9 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-028B",
     "start_time": "9:41 AM",
@@ -600846,14 +600846,14 @@
     "driving_time": "1:18 hrs",
     "driving_minutes": 78,
     "stops": "",
-    "status": "Ready",
+    "status": "On Time",
     "stops_today": "0/4",
     "next_stop": "\u2014 - 4 miles",
     "driving_duration": "1.3 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-029B",
     "start_time": "9:56 AM",
@@ -600868,7 +600868,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-030B",
     "start_time": "9:56 AM",
@@ -600876,14 +600876,14 @@
     "driving_time": "0:22 hrs",
     "driving_minutes": 22,
     "stops": "",
-    "status": "Ready",
+    "status": "On Time",
     "stops_today": "0/3",
     "next_stop": "\u2014 - 4 miles",
     "driving_duration": "0.4 hrs",
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-001C",
     "start_time": "10:04 AM",
@@ -600898,7 +600898,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-002C",
     "start_time": "10:27 AM",
@@ -600913,7 +600913,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-003C",
     "start_time": "10:28 AM",
@@ -600928,7 +600928,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-004C",
     "start_time": "10:47 AM",
@@ -600943,7 +600943,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-005C",
     "start_time": "10:56 AM",
@@ -600958,7 +600958,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-006C",
     "start_time": "11:00 AM",
@@ -600973,7 +600973,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-007C",
     "start_time": "11:04 AM",
@@ -600988,7 +600988,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-008C",
     "start_time": "11:05 AM",
@@ -601003,7 +601003,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-009C",
     "start_time": "11:40 AM",
@@ -601018,7 +601018,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-010C",
     "start_time": "11:46 AM",
@@ -601033,7 +601033,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-011C",
     "start_time": "11:54 AM",
@@ -601048,7 +601048,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-012C",
     "start_time": "12:01 PM",
@@ -601063,7 +601063,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-013C",
     "start_time": "12:02 PM",
@@ -601078,7 +601078,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-014C",
     "start_time": "12:02 PM",
@@ -601093,7 +601093,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-015C",
     "start_time": "12:28 PM",
@@ -601108,7 +601108,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-016C",
     "start_time": "1:01 PM",
@@ -601123,7 +601123,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-017C",
     "start_time": "1:40 PM",
@@ -601138,7 +601138,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-018C",
     "start_time": "1:41 PM",
@@ -601153,7 +601153,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-019C",
     "start_time": "1:45 PM",
@@ -601168,7 +601168,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-020C",
     "start_time": "1:55 PM",
@@ -601183,7 +601183,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-021C",
     "start_time": "1:59 PM",
@@ -601198,7 +601198,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-022C",
     "start_time": "2:00 PM",
@@ -601213,7 +601213,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-023C",
     "start_time": "2:02 PM",
@@ -601228,7 +601228,7 @@
     "refrigerated": "No"
   },
   {
-    "captured_at": "2026-08-16T15:11:40+00:00",
+    "captured_at": "2026-08-16T18:14:36+00:00",
     "capture_date": "2026-08-16",
     "truck_id": "G-024C",
     "start_time": "2:25 PM",
